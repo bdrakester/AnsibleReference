@@ -1,0 +1,69 @@
+- name: Configure the webservers
+  hosts: webservers
+  become: yes
+  gather_facts: no
+  vars:
+    runtask: false
+    debugflag: true
+    hello: world
+    world: hello
+    numberlist: [1,2,3]
+    stringlist:
+      - "abc"
+      - "b"
+      - "c"
+    mymap:
+      hello: world
+      goodbye:
+        person: mike
+        cat: joe
+        whale:
+          - jeff
+          - jim
+  roles:
+    - users
+    - webservers
+
+  tasks:
+    - debug:
+        msg: "mymap = {{mymap}}"
+      tags:
+        - simple
+    - debug:
+        msg: "mymap['hello'] = {{mymap['hello']}}"
+      tags:
+        - simple
+    - debug:
+        msg: "mymap.goodbye = {{mymap.goodbye}}"
+      tags:
+        - simple
+    - debug:
+        msg: "mymap.goodbye.cat = {{mymap.goodbye.cat}}"
+      tags:
+        - simple
+    - debug:
+        msg: "mymap.goodbye.whale[0] = {{mymap.goodbye.whale[0]}}"
+      tags:
+        - simple
+    - debug:
+        msg: "Debug messages ..."
+      when: debugflag
+    - debug:
+        msg: "Looping stringList : {{item}}"
+      loop: "{{ stringlist }}"
+    - debug:
+        msg: "Looping mymap.goodbye : {{item}}"
+      loop: "{{ mymap.goodbye|dict2items}}"
+    - debug:
+        msg: "Looping mymap  : {{ item.key }} == {{ item.value }}"
+      loop: "{{ mymap|dict2items }}"
+    - debug:
+        msg: "Looping mymap.goodbye.whale conditionally {{ item }}"
+      loop: "{{ mymap.goodbye.whale }}"
+      when: not debugflag
+
+- name: Configure the databases
+  hosts: databases
+  become: yes
+  roles:
+    - databases

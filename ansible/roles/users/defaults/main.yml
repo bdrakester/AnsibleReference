@@ -1,0 +1,9 @@
+users:
+  - username: alice
+    state: present
+
+  - username: bob
+    state: present
+
+  - username: johnd
+    state: absent
